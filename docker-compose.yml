@@ -13,8 +13,9 @@ services:
       - medaid-local-net
     environment:
       - VITE_AUTH_URL=http://localhost:4000
+      - AUTH_BACKEND_URL=http://auth-service:4000
       - MAP_BACKEND_URL=http://map-service:5000
-      - BACKEND_URL=http://map-service:5000
+      - BACKEND_URL=http://ai-service:3000
 
   auth-service:
     build:
