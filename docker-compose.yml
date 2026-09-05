@@ -6,13 +6,15 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./frontend:/app
+      - ./frontend:/app:z
       - /app/node_modules
     command: npm run dev -- --host 0.0.0.0 --port 8080
     networks:
       - medaid-local-net
     environment:
       - VITE_AUTH_URL=http://localhost:4000
+      - MAP_BACKEND_URL=http://map-service:5000
+      - BACKEND_URL=http://map-service:5000
 
   auth-service:
     build:
@@ -21,7 +23,7 @@ services:
     ports:
       - "4000:4000"
     volumes:
-      - ./auth-service:/app
+      - ./auth-service:/app:z
       - /app/node_modules
     # Node 22 supports native watch mode
     command: node --watch server.js
@@ -32,6 +34,7 @@ services:
     environment:
       - PORT=4000
       - MONGODB_URI=mongodb://mongodb:27017/firstaid
+      - JWT_SECRET_KEY=local-dev-secret-key-12345
 
   ai-service:
     build:
@@ -40,7 +43,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./ai-service:/app
+      - ./ai-service:/app:z
     command: uvicorn first_aid_rag.main:app --host 0.0.0.0 --port 3000 --reload
     depends_on:
       - qdrant
@@ -59,7 +62,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./map-service:/app
+      - ./map-service:/app:z
     command: uvicorn src.map.main:app --host 0.0.0.0 --port 5000 --reload
     networks:
       - medaid-local-net
@@ -71,7 +74,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./bge-service:/app
+      - ./bge-service:/app:z
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     networks:
       - medaid-local-net
