@@ -1,0 +1,15 @@
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/sfe-gp-2-project-2-26/first-aid-frontend.git
+[submodule "auth-service"]
+	path = auth-service
+	url = https://github.com/sfe-gp-2-project-2-26/first-aid-auth-service.git
+[submodule "ai-service"]
+	path = ai-service
+	url = https://github.com/sfe-gp-2-project-2-26/first-aid-ai-service.git
+[submodule "map-service"]
+	path = map-service
+	url = https://github.com/sfe-gp-2-project-2-26/first-aid-map-service.git
+[submodule "bge-service"]
+	path = bge-service
+	url = https://github.com/sfe-gp-2-project-2-26/first-aid-bge-service.git

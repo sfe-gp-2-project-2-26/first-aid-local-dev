@@ -1,0 +1,111 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev -- --host 0.0.0.0 --port 8080
+    networks:
+      - medaid-local-net
+    environment:
+      - VITE_AUTH_URL=http://localhost:4000
+
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./auth-service:/app
+      - /app/node_modules
+    # Node 22 supports native watch mode
+    command: node --watch server.js
+    depends_on:
+      - mongodb
+    networks:
+      - medaid-local-net
+    environment:
+      - PORT=4000
+      - MONGODB_URI=mongodb://mongodb:27017/firstaid
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./ai-service:/app
+    command: uvicorn first_aid_rag.main:app --host 0.0.0.0 --port 3000 --reload
+    depends_on:
+      - qdrant
+      - bge-service
+    networks:
+      - medaid-local-net
+    environment:
+      - QDRANT_URL=http://qdrant:6333
+      - REMOTE_EMBEDDING_URL=http://bge-service:8000
+      - REMOTE_DOCLING_URL=http://bge-service:8000
+
+  map-service:
+    build:
+      context: ./map-service
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./map-service:/app
+    command: uvicorn src.map.main:app --host 0.0.0.0 --port 5000 --reload
+    networks:
+      - medaid-local-net
+
+  bge-service:
+    build:
+      context: ./bge-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./bge-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - medaid-local-net
+    # Uncomment the following block if your local Docker daemon supports NVIDIA GPUs:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  mongodb:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - medaid-local-net
+
+  qdrant:
+    image: qdrant/qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    networks:
+      - medaid-local-net
+
+networks:
+  medaid-local-net:
+    driver: bridge
+
+volumes:
+  mongo-data:
+  qdrant-data:
