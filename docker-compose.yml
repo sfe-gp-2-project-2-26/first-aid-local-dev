@@ -16,6 +16,7 @@ services:
       - AUTH_BACKEND_URL=http://auth-service:4000
       - MAP_BACKEND_URL=http://map-service:5000
       - BACKEND_URL=http://ai-service:3000
+      - VITE_AMBULANCE_NUMBER=123
 
   auth-service:
     build:
