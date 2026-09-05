@@ -53,8 +53,7 @@ services:
       - medaid-local-net
     environment:
       - QDRANT_URL=http://qdrant:6333
-      - REMOTE_EMBEDDING_URL=http://bge-service:8000
-      - REMOTE_DOCLING_URL=http://bge-service:8000
+      - EMBEDDING_URL=http://bge-service:8000
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GROQ_API_KEY=${GROQ_API_KEY}
 
